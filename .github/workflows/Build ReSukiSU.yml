@@ -254,7 +254,11 @@ jobs:
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/external/dtc/scripts/setlocalversion
           
-          if [ "${{ github.event.inputs.KERNEL_VERSION }}" != "6.6" ]; then
+          if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.15" ]; then
+            sed -i '$s|echo "\$res"|echo "-android13-8-00761-g8f5578a9ecf8"|' kernel_platform/common/scripts/setlocalversion
+            sed -i '$s|echo "\$res"|echo "-android13-8-00761-g8f5578a9ecf8"|' kernel_platform/msm-kernel/scripts/setlocalversion
+            sed -i '$s|echo "\$res"|echo "-android13-8-00761-g8f5578a9ecf8"|' kernel_platform/external/dtc/scripts/setlocalversion
+          elif [ "${{ github.event.inputs.KERNEL_VERSION }}" != "6.6" ]; then
             sed -i '$s|echo "\$res"|echo "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion            
             sed -i '$s|echo "\$res"|echo "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
             sed -i '$s|echo "\$res"|echo "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
@@ -523,6 +527,8 @@ jobs:
             make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out KCFLAGS+=-O2  gki_defconfig all
             
           elif [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.15" ]; then
+            export KBUILD_BUILD_TIMESTAMP="Tue Jun 18 02:38:11 UTC 2024"
+            export KBUILD_BUILD_VERSION=1
             export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r450784e/bin:$PATH"
             export PATH="/usr/lib/ccache:$PATH"
             sudo apt install libelf-dev
